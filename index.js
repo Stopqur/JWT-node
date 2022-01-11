@@ -3,6 +3,7 @@ const cors = require('cors')
 
 const db = require('./models')
 const authRouter = require('./routes/auth.routes')
+
 const app = express()
 const corsSetting = {
     origin: "http://localhost:5000"
