@@ -56,3 +56,34 @@ exports.authUser = (req, res) => {
     res.status(500).send({ message: err.message });
   });
 };
+
+exports.getUsers = async (req, res) => {
+    try {
+        const users = await User.findAll({ raw: true })
+        res.json(users)
+    } catch(e) {
+        res.status(400).json({ message: e })
+    }
+}
+
+exports.updateUser = async (req, res) => {
+  try {
+    const user = await User.findOne({ where: { username: req.body.username }})
+    const newUser = await user.update({
+      email: req.body.email
+    })
+    res.json(newUser)
+  } catch(e) {
+    res.status(400).json({message: e})
+  }
+}
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const user = await User.findOne({ where: { username: req.body.username}})
+    await user.destroy()
+    res.json(user)
+  } catch(e) {
+    res.status(400).json({message: "Не удалось найти пользователя"})
+  }
+}

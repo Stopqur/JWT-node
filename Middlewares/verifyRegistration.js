@@ -1,7 +1,11 @@
+const jwt = require('jsonwebtoken')
+
 const db = require("../models");
+const { secret } = require('../config/auth.config')
+
 const User = db.user;
 
-const checkDuplicate = (req, res, next) => {
+exports.checkDuplicate = (req, res, next) => {
   // Username
   User.findOne({
     where: {
@@ -10,7 +14,7 @@ const checkDuplicate = (req, res, next) => {
   }).then(user => {
     if (user) {
       res.status(400).send({
-        message: "Failed! Username is already in use!"
+        message: "Пользователь с таким именем уже существует!"
       });
       return;
     }
@@ -23,18 +27,29 @@ const checkDuplicate = (req, res, next) => {
     }).then(user => {
       if (user) {
         res.status(400).send({
-          message: "Failed! Email is already in use!"
+          message: "Пользователь с таким email уже существует!"
         });
         return;
       }
-
       next();
     });
   });
 };
 
-const verifyReg = {
-  checkDuplicate,
-};
-
-module.exports = verifyReg;
+exports.accessAuthUser = (req, res, next) => {
+  if(req.method === 'OPTIONS') {
+    next()
+  }
+  try {
+    const token = req.headers.authorization.split(' ')[1]
+    if(!token) {
+      res.status(403).json({ message: 'Вы не авторизованы'})
+    }
+    const decodedData = jwt.verify(token, secret)
+    req.user = decodedData
+    next()
+  } catch(e) {
+      res.status(403).json({error: e})
+      console.log('request', req.headers.authorization())
+  }
+}
