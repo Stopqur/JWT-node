@@ -14,7 +14,6 @@ app.use(express.json())
 
 
 require('./routes/auth.routes')(app);
-require('./routes/user.routes')(app);
 
 db.sequelize.sync();
 app.listen(5000, () => { console.log('working')})
