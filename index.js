@@ -19,7 +19,6 @@ app.use('', (req, res, next) => {
 });
 
 app.use('/auth', authRouter)
-// require('./routes/auth.routes')(app);
 
 db.sequelize.sync();
 app.listen(5000, () => { console.log('working')})
